@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Website</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font and dark background */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate-900 for dark mode background */
+        }
+        .container-card {
+            background-color: #1e293b; /* Slate-800 for the card background */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="container-card w-full max-w-lg mx-auto p-8 rounded-xl text-white">
+        <!-- Content will be rendered here by JavaScript -->
+    </div>
+
+    <script>
+        // --- State Management ---
+        const app = document.getElementById('app');
+        let currentPage = 'home';
+        let isLoggedIn = false;
+        const MAX_MESSAGE_LENGTH = 500; 
+
+        // --- Utility Functions ---
+
+        /**
+         * Switches the current view and re-renders the UI.
+         * @param {string} page - The name of the page to navigate to ('home', 'form', 'login', or 'thankyou').
+         */
+        function navigate(page) {
+            currentPage = page;
+            render();
+        }
+
+        /**
+         * Navigates to the login form.
+         */
+        function navigateToLogin() {
+            navigate('login');
+        }
+
+        /**
+         * Handles the login form submission and simulates a successful authentication.
+         * VALIDATION IS REMOVED as requested.
+         * @param {Event} e - The form submit event.
+         */
+        function simulateAuth(e) {
+            e.preventDefault();
+            
+            // In a real app, you would check credentials here.
+            // Values are retrieved but not used for validation, as requested.
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            isLoggedIn = true;
+            // Success message changed to "Thank You!" as requested
+            showMessage(`Thank You!`, "You are now logged in. (Simulation Complete)", "text-green-400");
+            navigate('home');
+        }
+
+        /**
+         * Updates the character count displayed below the textarea.
+         */
+        function updateCharCount() {
+            const textarea = document.getElementById('message');
+            const counter = document.getElementById('charCount');
+            if (textarea && counter) {
+                const currentLength = textarea.value.length;
+                counter.textContent = `${currentLength}/${MAX_MESSAGE_LENGTH} characters`;
+                // Optionally change color if close to limit
+                counter.classList.toggle('text-red-400', currentLength > MAX_MESSAGE_LENGTH * 0.9);
+            }
+        }
+
+        /**
+         * Displays a temporary notification message on the screen.
+         * @param {string} title - The title of the message.
+         * @param {string} body - The main body of the message.
+         * @param {string} colorClass - Tailwind class for title color (e.g., 'text-green-400').
+         */
+        function showMessage(title, body, colorClass) {
+            const messageBox = document.getElementById('messageBox');
+            if (!messageBox) return;
+
+            messageBox.innerHTML = `
+                <div class="p-4 rounded-lg bg-gray-700/50 mb-6 transition duration-300 transform scale-100 shadow-xl">
+                    <h3 class="font-bold text-lg ${colorClass}">${title}</h3>
+                    <p class="text-sm text-gray-300 mt-1">${body}</p>
+                </div>
+            `;
+            // Automatically clear the message after 5 seconds
+            setTimeout(() => {
+                messageBox.innerHTML = '';
+            }, 5000);
+        }
+
+        /**
+         * Handles the form submission by preventing default and simulating success.
+         * Now navigates to a dedicated 'thankyou' page.
+         * @param {Event} e - The form submit event.
+         */
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            try {
+                const message = document.getElementById('message').value;
+
+                // --- No storage action is performed here, as requested ---
+                console.log("Message submitted (simulated):", message);
+
+                // Clear the form field
+                document.getElementById('message').value = '';
+
+                // Navigate to the new thank you page
+                navigate('thankyou');
+
+            } catch (error) {
+                console.error("Critical error during form submission:", error);
+                showMessage(
+                    "Critical Error", 
+                    "An unexpected error occurred. Check the console for details.", 
+                    "text-red-600"
+                );
+            }
+        }
+
+
+        // --- Rendering Logic ---
+
+        /**
+         * Generates the HTML for the Home View.
+         * @returns {string} The HTML string.
+         */
+        function renderHome() {
+            let welcomeTitle;
+            let welcomeMessage;
+
+            if (isLoggedIn) {
+                welcomeTitle = "Welcome Back!";
+                welcomeMessage = "You have successfully logged in. This is the main section of the Test Website. Use the button below to send a message.";
+            } else {
+                welcomeTitle = "Welcome!";
+                welcomeMessage = "This is your starting page. Use the navigation buttons below to explore the site.";
+            }
+
+            return `
+                <h2 class="text-3xl font-extrabold text-sky-400 mb-6">${welcomeTitle}</h2>
+                <p class="text-gray-300 mb-8">
+                    ${welcomeMessage}
+                </p>
+                <div class="space-y-4">
+                    <button onclick="navigate('form')"
+                        class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-md transform hover:scale-[1.02] active:scale-[0.98]">
+                        Message
+                    </button>
+                </div>
+            `;
+        }
+
+        /**
+         * Generates the HTML for the Login View.
+         * @returns {string} The HTML string.
+         */
+        function renderLogin() {
+            return `
+                <h2 class="text-3xl font-extrabold text-indigo-400 mb-8">User Login</h2>
+                <form id="loginForm" onsubmit="simulateAuth(event)">
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                        <input type="text" id="username" name="username" required 
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400"
+                            placeholder="Enter your username">
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                        <input type="password" id="password" name="password" required 
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400"
+                            placeholder="Enter your password">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <button type="submit"
+                            class="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-md transform hover:scale-[1.02] active:scale-[0.98]">
+                            Submit Login
+                        </button>
+                        <button type="button" onclick="navigate('home')"
+                            class="text-sm text-sky-400 hover:text-sky-300 transition duration-200">
+                            &larr; Back to Home
+                        </button>
+                    </div>
+                </form>
+            `;
+        }
+
+        /**
+         * Generates the HTML for the Message Form View.
+         * @returns {string} The HTML string.
+         */
+        function renderForm() {
+            return `
+                <h2 class="text-3xl font-extrabold text-sky-400 mb-6">Send Us a Message</h2>
+                <form id="messageForm" onsubmit="handleFormSubmit(event)">
+                    <div class="mb-6">
+                        <label for="message" class="block text-sm font-medium text-gray-300 mb-2">Your Message:</label>
+                        <textarea id="message" name="message" rows="5" required maxlength="${MAX_MESSAGE_LENGTH}"
+                            oninput="updateCharCount()"
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-white placeholder-gray-400 resize-none"
+                            placeholder="Type your message here, limit ${MAX_MESSAGE_LENGTH} characters..."></textarea>
+                        <p id="charCount" class="text-xs text-gray-400 mt-1 text-right">0/${MAX_MESSAGE_LENGTH} characters</p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <button type="submit"
+                            class="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-md transform hover:scale-[1.02] active:scale-[0.98]">
+                            Submit Message
+                        </button>
+                        <button type="button" onclick="navigate('home')"
+                            class="text-sm text-sky-400 hover:text-sky-300 transition duration-200">
+                            &larr; Back to Home
+                        </button>
+                    </div>
+                </form>
+            `;
+        }
+
+        /**
+         * Generates the HTML for the Thank You View.
+         * @returns {string} The HTML string.
+         */
+        function renderThankYou() {
+            return `
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-20 w-20 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h2 class="text-5xl font-extrabold text-white mt-4">Thank You!</h2>
+                    <p class="text-gray-400 mt-3 text-lg">
+                        Your message has been received. We appreciate your feedback.
+                        <span class="block text-xs mt-2">(Note: Data was not permanently stored, as requested.)</span>
+                    </p>
+                    <button onclick="navigate('home')"
+                        class="mt-8 bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-md transform hover:scale-[1.02] active:scale-[0.98]">
+                        Return to Home
+                    </button>
+                </div>
+            `;
+        }
+
+        /**
+         * The main rendering function that updates the entire UI.
+         */
+        function render() {
+            let contentHtml = '';
+
+            // 1. Determine the content based on the current page
+            switch (currentPage) {
+                case 'home':
+                    contentHtml = renderHome();
+                    break;
+                case 'form':
+                    contentHtml = renderForm();
+                    break;
+                case 'login':
+                    contentHtml = renderLogin();
+                    break;
+                case 'thankyou': // New page handler
+                    contentHtml = renderThankYou();
+                    break;
+                default:
+                    // Fallback to home if state is invalid
+                    currentPage = 'home';
+                    contentHtml = renderHome();
+            }
+
+            // 2. Assemble the full structure (Header, Message Box, Content)
+            const fullHtml = `
+                <!-- Header (always visible) -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-700">
+                    <h1 class="text-xl font-bold text-white">Test Website</h1>
+                    ${isLoggedIn 
+                        ? `<span class="text-sm font-medium text-green-400">Logged In</span>`
+                        : `<button onclick="navigateToLogin()"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 transform hover:scale-[1.05]">
+                            Login
+                        </button>`
+                    }
+                </div>
+
+                <!-- Notification Area - Removed for thankyou page flow -->
+                ${currentPage !== 'thankyou' ? `<div id="messageBox" class="min-h-[50px]"></div>` : ''}
+
+                <!-- Main Content Area -->
+                <div>
+                    ${contentHtml}
+                </div>
+            `;
+
+            // 3. Update the DOM
+            app.innerHTML = fullHtml;
+
+            // 4. Attach listeners only for the form page
+            if (currentPage === 'form') {
+                const form = document.getElementById('messageForm');
+                if (form) {
+                    form.addEventListener('submit', handleFormSubmit);
+                }
+                const textarea = document.getElementById('message');
+                if (textarea) {
+                    textarea.addEventListener('input', updateCharCount);
+                    // Initial count update
+                    updateCharCount(); 
+                }
+            } else if (currentPage === 'login') {
+                const form = document.getElementById('loginForm');
+                if (form) {
+                    form.addEventListener('submit', simulateAuth);
+                }
+            }
+        }
+
+        // --- Initialization ---
+        window.onload = render;
+    </script>
+</body>
+</html>
