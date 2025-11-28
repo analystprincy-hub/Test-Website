@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-NJKSRNLQ');</script>
-<!-- End Google Tag Manager -->
-    
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Website</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for the Inter font and dark background */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0f172a; /* Slate-900 for dark mode background */
@@ -29,19 +25,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJKSRNLQ"
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJKSRNLQ"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-
-    <div id="app" class="container-card w-full max-w-lg mx-auto p-8 rounded-xl text-white">
-        <!-- Content will be rendered here by JavaScript -->
-    </div>
+<div id="app" class="container-card w-full max-w-lg mx-auto p-8 rounded-xl text-white">
+        </div>
 
     <script>
         // --- State Management ---
         const app = document.getElementById('app');
-        let currentPage = 'home';
+        let currentPage = 'home'; 
         let isLoggedIn = false;
         const MAX_MESSAGE_LENGTH = 500; 
 
@@ -49,7 +41,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         /**
          * Switches the current view and re-renders the UI.
-         * @param {string} page - The name of the page to navigate to ('home', 'form', 'login', or 'thankyou').
+         * @param {string} page - The name of the page to navigate to ('home', 'form', 'login', 'thankyou-form', or 'thankyou-login').
          */
         function navigate(page) {
             currentPage = page;
@@ -65,21 +57,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         /**
          * Handles the login form submission and simulates a successful authentication.
-         * VALIDATION IS REMOVED as requested.
          * @param {Event} e - The form submit event.
          */
         function simulateAuth(e) {
             e.preventDefault();
             
             // In a real app, you would check credentials here.
-            // Values are retrieved but not used for validation, as requested.
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
+            // For simulation, we assume success
+            
             isLoggedIn = true;
-            // Success message changed to "Thank You!" as requested
-            showMessage(`Thank You!`, "You are now logged in. (Simulation Complete)", "text-green-400");
-            navigate('home');
+            
+            // Navigate to the NEW dedicated login thank you page
+            navigate('thankyou-login');
         }
 
         /**
@@ -120,7 +109,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         /**
          * Handles the form submission by preventing default and simulating success.
-         * Now navigates to a dedicated 'thankyou' page.
          * @param {Event} e - The form submit event.
          */
         function handleFormSubmit(e) {
@@ -129,14 +117,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             try {
                 const message = document.getElementById('message').value;
 
-                // --- No storage action is performed here, as requested ---
                 console.log("Message submitted (simulated):", message);
 
                 // Clear the form field
                 document.getElementById('message').value = '';
 
-                // Navigate to the new thank you page
-                navigate('thankyou');
+                // Navigate to the form thank you page
+                navigate('thankyou-form');
 
             } catch (error) {
                 console.error("Critical error during form submission:", error);
@@ -164,7 +151,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 welcomeMessage = "You have successfully logged in. This is the main section of the Test Website. Use the button below to send a message.";
             } else {
                 welcomeTitle = "Welcome!";
-                welcomeMessage = "This is your starting page. Use the navigation buttons below to explore the site.";
+                welcomeMessage = "This is your starting page. Please log in to gain access to premium features, or use the navigation button below to explore the site.";
             }
 
             return `
@@ -246,10 +233,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         /**
-         * Generates the HTML for the Thank You View.
+         * Generates the HTML for the Thank You View (after form submission).
          * @returns {string} The HTML string.
          */
-        function renderThankYou() {
+        function renderFormThankYou() {
             return `
                 <div class="text-center py-12">
                     <svg class="mx-auto h-20 w-20 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -269,10 +256,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         /**
+         * Generates the HTML for the Thank You View (after successful login).
+         * @returns {string} The HTML string.
+         */
+        function renderLoginThankYou() {
+            return `
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-20 w-20 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <h2 class="text-5xl font-extrabold text-white mt-4">Login Successful!</h2>
+                    <p class="text-gray-400 mt-3 text-lg">
+                        Thank you for logging in. You now have full access to our features.
+                    </p>
+                    <button onclick="navigate('home')"
+                        class="mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-md transform hover:scale-[1.02] active:scale-[0.98]">
+                        Continue to Dashboard
+                    </button>
+                </div>
+            `;
+        }
+
+        /**
          * The main rendering function that updates the entire UI.
          */
         function render() {
             let contentHtml = '';
+            let hideMessageBox = false; // Flag to control messageBox visibility
 
             // 1. Determine the content based on the current page
             switch (currentPage) {
@@ -285,8 +295,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 case 'login':
                     contentHtml = renderLogin();
                     break;
-                case 'thankyou': // New page handler
-                    contentHtml = renderThankYou();
+                case 'thankyou-form': 
+                    contentHtml = renderFormThankYou();
+                    hideMessageBox = true;
+                    break;
+                case 'thankyou-login': // <--- NEW PAGE ADDED HERE
+                    contentHtml = renderLoginThankYou();
+                    hideMessageBox = true;
                     break;
                 default:
                     // Fallback to home if state is invalid
@@ -296,7 +311,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             // 2. Assemble the full structure (Header, Message Box, Content)
             const fullHtml = `
-                <!-- Header (always visible) -->
                 <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-700">
                     <h1 class="text-xl font-bold text-white">Test Website</h1>
                     ${isLoggedIn 
@@ -308,10 +322,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     }
                 </div>
 
-                <!-- Notification Area - Removed for thankyou page flow -->
-                ${currentPage !== 'thankyou' ? `<div id="messageBox" class="min-h-[50px]"></div>` : ''}
+                ${!hideMessageBox ? `<div id="messageBox" class="min-h-[50px]"></div>` : ''}
 
-                <!-- Main Content Area -->
                 <div>
                     ${contentHtml}
                 </div>
@@ -320,23 +332,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             // 3. Update the DOM
             app.innerHTML = fullHtml;
 
-            // 4. Attach listeners only for the form page
+            // 4. Attach listeners
             if (currentPage === 'form') {
-                const form = document.getElementById('messageForm');
-                if (form) {
-                    form.addEventListener('submit', handleFormSubmit);
-                }
-                const textarea = document.getElementById('message');
-                if (textarea) {
-                    textarea.addEventListener('input', updateCharCount);
-                    // Initial count update
-                    updateCharCount(); 
-                }
+                // Ensure listeners are re-attached after DOM manipulation
+                document.getElementById('messageForm').addEventListener('submit', handleFormSubmit);
+                document.getElementById('message').addEventListener('input', updateCharCount);
+                updateCharCount(); // Initial count update
             } else if (currentPage === 'login') {
-                const form = document.getElementById('loginForm');
-                if (form) {
-                    form.addEventListener('submit', simulateAuth);
-                }
+                document.getElementById('loginForm').addEventListener('submit', simulateAuth);
             }
         }
 
